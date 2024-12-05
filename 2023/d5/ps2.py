@@ -1,40 +1,45 @@
-"""
-Puzzle input has info for:
-    Seeds that need to be planted
-    Type of soil to be used with each kind of seed
-    Type of fertilizer to be used with each kind of soil
-    Type of water to be used with each kind of fertilizer
-    And a bunch more stuff
+def process_input() -> tuple:
+    with open("problem_set.txt", "r") as file:
+        sanitized_data = []
+        seed = [int(i) for i in file.readline()[7:].strip().split(" ")]
+        sanitized_data.append(seed)
 
-Same numbers from one category can mean a diffrent thing in another category
-    soil 123 and fertilizer 123 aren't necessarily related to each other
+        source_to_destination_map = []
 
-Puzzle input info:
-    1) listing which seeds need to be planted: seeds 79, 14, 55, and 13
-    2) The rest of almanac contains a list of maps which describe how to convert numbers
-       from a source category(x) into numbers in a destination category(Y)
-       Ex -> How to convert seed number to soil number and so on
-    3) X(source)-to-Y(destination) map:
-        means -> type of Y needed for X
-    4) Each line within a map contains three numbers
-        destination range start(DRS)
-        source range start(SRS)
-        range length(RL)
-        [DRS + i for i in range(0, RL)]
-        [SRS + i for i in range(0, RL)]
+        for i in file.readlines():
+            if i[0].isdigit():
+                source_to_destination_map.append([int(k) for k in i.strip().split(" ")])
+            else:
+                if source_to_destination_map == []:
+                    continue
+                sanitized_data.append(source_to_destination_map)
+                source_to_destination_map = []
 
-        [(SRS[i], DRS[i]) for i in range(len(DRS))]
-    Any source numbers that aren't mapped correspond to the same destination number
-    So, seed number 10 corresponds to soil number 10
+        sanitized_data.append(source_to_destination_map)
 
-Every type of seed, soil, fertilizer etc is identified with a number
+        return sanitized_data
 
-Goal -> Find the lowest location Number
-Seed 79, soil 81, fertilizer 81, water 81, light 74, temperature 78, humidity 78, location 82.
-func(map: str, required_values: list) -> mapping for required values
-seeds = []
-a = seeds
-while(!location, i)
-    a = func(i, a)
-ans = seed[a.find(min(a))]
-"""
+def find_mapping(map_values, source) -> list:
+    maping = {i: i for i in source}
+
+    for rq_source_range in source:
+        for i in range(len(map_values)):
+            av_destination_range = range(map_values[i][0], map_values[i][0] + map_values[i][2])
+            av_source_range = range(map_values[i][1], map_values[i][1] + map_values[i][2])
+
+            common_start = max(av_source_range.start, rq_source_range.start)
+            common_end = min(av_source_range.stop, rq_source_range.stop)
+            if common_start < common_end:
+                x1 = common_start - av_source_range.start
+                x2 = common_end - av_source_range.stop
+                maping.update({rq_source_range: range(av_destination_range.start + x1, av_destination_range.stop + x2)})
+
+    return list(maping.values())
+
+data = process_input()
+location = []
+for i in range(0, len(data[0]), 2):
+    location.append(range(data[0][i], data[0][i] + data[0][i + 1]))
+
+for i in data[1:]:
+    location = find_mapping(i, location)
