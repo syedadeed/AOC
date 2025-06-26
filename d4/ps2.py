@@ -18,5 +18,4 @@ for i in range(len(card_instances)):
         card_instances[j] += card_instances[i]
 
 print(sum(card_instances))
-# Yes i wrote this and sorry i know you prolly cant understand it
 # yeah i tried the recursive approach, its slow
