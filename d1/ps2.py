@@ -1,3 +1,22 @@
+def find_location_alt(x: str) -> int:
+    """
+    both find_location_alt and find_location take approx the same amount of time
+    but this solution is more elegant imo
+    """
+    nums = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8,
+            "nine": 9, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
+    low = (-1, -1)
+    high = (-1, -1)
+    for i in nums:
+        index1 = x.find(i)
+        index2 = x.rfind(i)
+        if index1 != -1 and (low == (-1, -1) or index1 < low[0]):
+            low = (index1, nums[i])
+        if index2 != -1 and (high == (-1, -1) or index2 > high[0]):
+            high = (index2, nums[i])
+
+    return low[1]*10 + high[1]
+
 def find_num(substring: str, condition):
     number_names = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
     available_numbers = dict()
